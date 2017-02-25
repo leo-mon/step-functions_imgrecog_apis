@@ -1,0 +1,56 @@
+{
+  "Comment": "Amazon, Google, Microsoft Label Detection in Parallel",
+  "StartAt": "Parallel",
+  "States": {
+    "Parallel": {
+      "Type": "Parallel",
+      "Next": "Final State",
+      "Branches": [
+        {
+          "StartAt": "Amazon",
+          "States": {
+            "Amazon": {
+              "InputPath":"$",
+              "ResultPath": "$.amazon",
+              "OutputPath": "$",
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:ap-northeast-1:{AWS_ACCOUNT}:function:rekognition_detect_labels",
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "Google",
+          "States": {
+            "Google": {
+              "InputPath":"$",
+              "ResultPath": "$.google",
+              "OutputPath": "$",
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:ap-northeast-1:{AWS_ACCOUNT}:function:cloudvision_label_detection",
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "Microsoft",
+          "States": {
+            "Microsoft": {
+              "InputPath":"$",
+              "ResultPath": "$.microsoft",
+              "OutputPath": "$",
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:ap-northeast-1:{AWS_ACCOUNT}:function:computervision_analyze",
+              "End": true
+            }
+          }
+        }
+      ]
+    },
+    "Final State": {
+      "Type": "Task",
+      "Resource":"arn:aws:lambda:ap-northeast-1:{AWS_ACCOUNT}:function:stepfunctions-writer",
+      "End": true
+    }
+  }
+}
